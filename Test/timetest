@@ -6,7 +6,7 @@ SYSBC=/usr/bin/bc
 if [ x$BC = x ] ; then
   BC=../bc/bc
 fi
-for file in exp.b ln.b sine.b atan.b jn.b mul.b div.b raise.b sqrt.b fact.b
+for file in exp.b ln.b sine.b atan.b jn.b mul.b mul2.b div.b raise.b sqrt.b fact.b
 do
 for prog in $SYSBC $BC $OTHERBC
 do

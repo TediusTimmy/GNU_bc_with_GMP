@@ -32,36 +32,19 @@
 #ifndef _NUMBER_H_
 #define _NUMBER_H_
 
-typedef enum {PLUS, MINUS} sign;
+#include <gmp.h>
 
 typedef struct bc_struct *bc_num;
 
 typedef struct bc_struct
     {
-      sign  n_sign;
-      int   n_len;	/* The number of digits before the decimal point. */
-      int   n_scale;	/* The number of digits after the decimal point. */
-      int   n_refs;     /* The number of pointers to this number. */
+      int    n_scale;	/* The number of digits after the decimal point. */
+      int    n_refs;    /* The number of pointers to this number. */
       bc_num n_next;	/* Linked list for available list. */
-      char *n_ptr;	/* The pointer to the actual storage.
-			   If NULL, n_value points to the inside of
-			   another number (bc_multiply...) and should
-			   not be "freed." */
-      char *n_value;	/* The number. Not zero char terminated.
-			   May not point to the same place as n_ptr as
-			   in the case of leading zeros generated. */
+
+      mpz_t  n_value;	/* The number. */
     } bc_struct;
 
-
-/* The base used in storing the numbers in n_value above.
-   Currently this MUST be 10. */
-
-#define BASE 10
-
-/*  Some useful macros and constants. */
-
-#define CH_VAL(c)     (c - '0')
-#define BCD_CHAR(d)   (d + '0')
 
 #ifdef MIN
 #undef MIN
@@ -69,7 +52,6 @@ typedef struct bc_struct
 #endif
 #define MAX(a,b)      ((a)>(b)?(a):(b))
 #define MIN(a,b)      ((a)>(b)?(b):(a))
-#define ODD(a)        ((a)&1)
 
 #ifndef TRUE
 #define TRUE 1
@@ -107,11 +89,14 @@ void bc_int2num (bc_num *num, int val);
 
 long bc_num2long (bc_num num);
 
+int bc_num_length (bc_num num);
+int bc_num_scale (bc_num num);
+
+void bc_neg (bc_num *num);
+
 int bc_compare (bc_num n1, bc_num n2);
 
 char bc_is_zero (bc_num num);
-
-char bc_is_near_zero (bc_num num, int scale);
 
 char bc_is_neg (bc_num num);
 

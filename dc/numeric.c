@@ -382,12 +382,11 @@ dc_numlen DC_DECLARG((value))
 	dc_num value DC_DECLEND
 {
 	/* XXX warning: unholy coziness with the internals of a bc_num! */
-	bc_num num = CastNum(value);
-	char *p = num->n_value;
-	int i = num->n_len + num->n_scale;
+	/* TD: This function is clear. */
+	int i;
 
-	while (1<i && *p=='\0')
-		--i, ++p;
+	i = bc_num_length (CastNum(value));
+
 	return i;
 }
 
@@ -454,7 +453,8 @@ dc_dump_num DC_DECLARG((dcvalue, discard_p))
 	/* we only handle the integer portion: */
 	bc_divide(CastNum(dcvalue), _one_, &value, 0);
 	/* we only handle the absolute value: */
-	value->n_sign = PLUS;
+	if (bc_is_neg(value))
+		bc_neg(&value);
 	/* we're done with the dcvalue parameter: */
 	if (discard_p == DC_TOSS)
 		dc_free_num(&dcvalue);
@@ -499,8 +499,14 @@ dc_dup_num DC_DECLARG((value))
 {
 	dc_data result;
 
-	++CastNum(value)->n_refs;
-	result.v.number = value;
+	/* Original line: */
+	/* ++CastNum(value)->n_refs; */
+	/* New line: */
+	/* bc_copy_num(CastNum(value)); */
+	/* result.v.number = value; */
+	/* Final line: */
+	*CastNumPtr(&result.v.number) = bc_copy_num(CastNum(value));
+	/* This was taken from dc_getnum removes the last of the coziness. */
 	result.dc_type = DC_NUMBER;
 	return result;
 }
@@ -588,14 +594,6 @@ out_char (ch)
 		}
 		putchar(ch);
 	}
-}
-
-/* Malloc could not get enough memory. */
-
-void
-out_of_memory()
-{
-	dc_memfail();
 }
 
 /* Runtime error --- will print a message and stop the machine. */

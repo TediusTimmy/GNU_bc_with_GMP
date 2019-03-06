@@ -19,9 +19,13 @@
  *
  */
 
+#define dc_malloc bc_num_malloc
+#define dc_realloc bc_num_realloc
+
 extern const char *dc_str2charp DC_PROTO((dc_str));
 extern const char *dc_system DC_PROTO((const char *));
 extern void *dc_malloc DC_PROTO((size_t));
+extern void *dc_realloc DC_PROTO((void *, size_t, size_t));
 extern struct dc_array *dc_get_stacked_array DC_PROTO((int));
 
 extern void dc_array_set DC_PROTO((int, int, dc_data));

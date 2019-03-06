@@ -4,3 +4,6 @@ source in the "lib" directory.
 Ken Pizzini <ken@gnu.org> wrote dc, making use of the lib/number.c
 code that Phil Nelson wrote to handle the actual multiprecision
 arithmetic.
+
+Thomas DiModica <ricinwich@yahoo.com> rewrote much of number.c and
+portions of bc and dc so as to use GMP.

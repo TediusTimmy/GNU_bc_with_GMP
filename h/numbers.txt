@@ -1,0 +1,64 @@
+This file is here to explain how bc's numbers work.
+The author of OpenBSD's bc/dc uses this same approach, using
+OpenSSL's bignums instead of GMP.
+
+
+The mathematical model for bc's numbers is:
+sign * significand * 10 ^ -scale.
+
+When using GMP, we simplify this to:
+significand * 10 ^ -scale.
+
+
+Take two bc numbers: x and y written in full as:
+x_s * 10 ^ x_e and y_s * 10 ^ y_e.
+
+
+To add or subtract, we shift one to be in the range of the other:
+   (x_s * 10 ^ x_e) * 10 ^ (y_e - x_e)
+ = x_s * 10 ^ (x_e + y_e - x_e)
+ = x_s * 10 ^ y_e
+
+So that:
+x_s * 10 ^ y_e +- y_s * 10 ^ y_e = (x_s +- y_s) * 10 ^ y_e.
+
+When we do this, we choose the number with the greater scale, and
+therefore lesser exponent to normalize to, as doing the opposite
+would cause accuracy to be lost.
+
+
+To multiply, it is easier:
+(x_s * 10 ^ x_e) * (y_s * 10 ^ y_e) = (x_s * y_s) * 10 ^ (x_e + y_e)
+
+
+Division likewise:
+(x_s * 10 ^ x_e) / (y_s * 10 ^ y_e) = (x_s / y_s) * 10 ^ (x_e - y_e)
+
+In division, however, we try to get a specific scale, call it r_e.
+We do so by multiplying x by 10 ^ (y_e + r_e - x_e)
+   (x_s * 10 ^ x_e) * 10 ^ (y_e + r_e - x_e)
+ = x_s * 10 ^ (x_e + y_e + r_e - x_e)
+ = x_s * 10 ^ (y_e + r_e)
+We then divide:
+   (x_s * 10 ^ (y_e + r_e)) / (y_s * 10 ^ y_e)
+ = (x_s / y_s) * 10 ^ (y_e + r_e - y_e)
+ = (x_s / y_s) * 10 ^ r_e
+
+
+Finally, there is square-root.
+
+To get square-root with the correct scale, r_e, we multiply the
+number, x, by 10 ^ (x_e + 2 * (r_e - x_e))
+   (x_s * 10 ^ x_e) * 10 ^ (x_e + 2 * (r_e - x_e))
+ = x_s * 10 ^ (x_e + x_e + 2 * r_e - 2 * x_e)
+ = x_s * 10 ^ (2 * r_e)
+We then take it to the 1/2 power.
+   (x_s * 10 ^ (2 * r_e)) ^ (1/2)
+ = (x_s ^ 1/2) * 10 ^ (2 * r_e / 2)
+ = (x_s ^ 1/2) * 10 ^ r_e
+And this is how square-root is computed quickly.
+
+The only problem with this method is that the integer square-root
+and the square-root of bc may differ by 1 ULP. There are no differences
+that are currently known, but it is possible, depending on how bc
+and GMP defined square-root.

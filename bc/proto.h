@@ -56,6 +56,10 @@ void push_constant (int (*in_char)(void), int conv_base);
 void push_b10_const (program_counter *pc_);
 void assign (char code);
 
+/* Used to glue bc to bc_num */
+#define bc_malloc bc_num_malloc
+#define bc_realloc bc_num_realloc
+
 /* From util.c */
 char *strcopyof (const char *str);
 arg_list *nextarg (arg_list *args, int val, int is_var);
@@ -74,6 +78,7 @@ int insert_id_rec (id_rec **root, id_rec *new_id);
 void init_tree (void);
 int lookup (char *name, int namekind);
 void *bc_malloc (size_t);
+void *bc_realloc (void *, size_t, size_t);
 void out_of_memory (void);
 void welcome (void);
 void warranty (const char *);

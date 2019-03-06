@@ -269,17 +269,15 @@ execute (void)
 	{
 	case 'L':  /* Length function. */
 	  /* For the number 0.xxxx,  0 is not significant. */
-	  if (ex_stack->s_num->n_len == 1 &&
-	      ex_stack->s_num->n_scale != 0 &&
-	      ex_stack->s_num->n_value[0] == 0 )
-	    bc_int2num (&ex_stack->s_num, ex_stack->s_num->n_scale);
+	  if ( bc_num_length (ex_stack->s_num) <=
+	       bc_num_scale (ex_stack->s_num) )
+	    bc_int2num (&ex_stack->s_num, bc_num_scale (ex_stack->s_num));
 	  else
-	    bc_int2num (&ex_stack->s_num, ex_stack->s_num->n_len
-		     + ex_stack->s_num->n_scale);
+	    bc_int2num (&ex_stack->s_num, bc_num_length (ex_stack->s_num));
 	  break;
 		
 	case 'S':  /* Scale function. */ 
-	  bc_int2num (&ex_stack->s_num, ex_stack->s_num->n_scale);
+	  bc_int2num (&ex_stack->s_num, bc_num_scale (ex_stack->s_num));
 	  break;
 
 	case 'R':  /* Square Root function. */
@@ -705,7 +703,7 @@ push_b10_const (program_counter *progctr)
   program_counter look_pc;
   int kdigits, kscale;
   unsigned char inchar;
-  char *ptr;
+  char *ptr, *nptr;
   
   /* Count the digits and get things ready. */
   look_pc = *progctr;
@@ -754,30 +752,29 @@ push_b10_const (program_counter *progctr)
       }
     }
 
-  /* Build the new number. */
-  if (kdigits == 0)
-    {
-      build = bc_new_num (1,kscale);
-      ptr = build->n_value;
-      *ptr++ = 0;
-    }
-  else
-    {
-      build = bc_new_num (kdigits,kscale);
-      ptr = build->n_value;
-    }
+  /* Build the new number. Phil broke the abstraction here, making
+     me do more work. The only way to fix this would be "unholy
+     coziness" within bc_str2num, or to make a third copy of this
+     number. We'll keep the abstraction broken. */
+  build = bc_new_num (1,kscale);
+  nptr = (char *) bc_malloc (kdigits + kscale + 1);
+  ptr = nptr;
 
   while (inchar != ':')
     {
       if (inchar != '.')
 	{
 	  if (inchar > 9)
-	    *ptr++ = 9;
+	    *ptr++ = 9 + '0';
 	  else
-	    *ptr++ = inchar;
+	    *ptr++ = inchar + '0';
 	}
       inchar = byte(progctr);
     }
+  *ptr = '\0';
+  gmp_sscanf (nptr, "%Zd", build->n_value);
+  free (nptr);
+
   push_num (build);
 }
 

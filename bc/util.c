@@ -656,6 +656,23 @@ bc_malloc (size_t size)
   return ptr;
 }
 
+/* bc_realloc will check the return value so all other places do not
+   have to do it!  NEWSIZE is the number of bytes to allocate. */
+
+void *
+bc_realloc (void *oldptr, size_t oldsize, size_t newsize)
+{
+  void *ptr;
+
+  oldsize = 0; /* Shut up, compiler! */
+
+  ptr = (void *) realloc (oldptr, newsize);
+  if (ptr == NULL)
+    out_of_memory ();
+
+  return ptr;
+}
+
 
 /* The following routines are error routines for various problems. */
 

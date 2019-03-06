@@ -73,6 +73,21 @@ dc_malloc DC_DECLARG((len))
 	return result;
 }
 
+/* realloc or die */
+void *
+dc_realloc DC_DECLARG((oldptr, oldlen, newlen))
+    void *oldptr DC_DECLSEP
+    size_t oldlen DC_DECLSEP
+    size_t newlen DC_DECLEND
+{
+    void *result = realloc(oldptr, newlen);
+    oldlen = 0; /* Silence the warning. */
+
+    if (result == NULL)
+        dc_memfail();
+    return result;
+}
+
 
 /* print the id in a human-understandable form
  *  fp is the output stream to place the output on
