@@ -10,6 +10,6 @@ The result is faster and slower, depending on use. To show this, there is the fi
 As an aside, the code for handling output bases other than 10 is rather inefficient.
 
 
-Final note: my conversation with the GMP mailing list.
-Me (12/15/2011): So, I rewrote GNU bc's number system to use GMP to store and manipulate the numeric data, and I'm not sure what I should do with it. I sent it to Phil Nelson [in August], but I probably insulted him with the condition it is in (you need to manually change the make files to include libgmp). On this vein, why doesn't GMP include a fixed-point data type (either decimal or binary)? Is it too trivial for y'all to bother with? It would be handy for currency calculations, like the cost of a loaf of bread in drachmas.
+Final note: my conversation with the GMP mailing list.  
+Me (12/15/2011): So, I rewrote GNU bc's number system to use GMP to store and manipulate the numeric data, and I'm not sure what I should do with it. I sent it to Phil Nelson [in August], but I probably insulted him with the condition it is in (you need to manually change the make files to include libgmp). On this vein, why doesn't GMP include a fixed-point data type (either decimal or binary)? Is it too trivial for y'all to bother with? It would be handy for currency calculations, like the cost of a loaf of bread in drachmas.  
 Christ Schlacta: Fixed point is what people use because their platform doesn't support floating point because it sucks.  You can approximate fixed point using mpq and always using a denominator that's a power of ten.
