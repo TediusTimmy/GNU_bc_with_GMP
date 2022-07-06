@@ -349,6 +349,7 @@ get_var (int var_name)
     {
       var_ptr = variables[var_name] = bc_malloc (sizeof (bc_var));
       bc_init_num (&var_ptr->v_value);
+      var_ptr->v_next = NULL;
     }
   return var_ptr;
 }
@@ -369,6 +370,12 @@ get_array_num (int var_index, unsigned long idx)
   int log;
   unsigned int ix, ix1;
   int sub [NODE_DEPTH];
+
+  if (var_index >= a_count)
+  {
+    rt_error ("Internal Error.");
+    return NULL;
+  }
 
   /* Get the array entry. */
   ary_ptr = arrays[var_index];
@@ -588,6 +595,12 @@ store_array (int var_name)
   bc_num *num_ptr;
   long idx;
 
+  if (var_name >= a_count)
+  {
+    rt_error ("Internal Error.");
+    return NULL;
+  }
+
   if (!check_stack(2)) return;
   idx = bc_num2long (ex_stack->s_next->s_num);
   if (idx < 0 || idx > BC_DIM_MAX ||
@@ -665,6 +678,12 @@ load_array (int var_name)
 {
   bc_num *num_ptr;
   long   idx;
+
+  if (var_name >= a_count)
+  {
+    rt_error ("Internal Error.");
+    return NULL;
+  }
 
   if (!check_stack(1)) return;
   idx = bc_num2long (ex_stack->s_num);
@@ -745,6 +764,12 @@ decr_array (int var_name)
 {
   bc_num *num_ptr;
   long   idx;
+
+  if (var_name >= a_count)
+  {
+    rt_error ("Internal Error.");
+    return NULL;
+  }
 
   /* It is an array variable. */
   if (!check_stack (1)) return;
@@ -827,6 +852,12 @@ incr_array (int var_name)
 {
   bc_num *num_ptr;
   long   idx;
+
+  if (var_name >= a_count)
+  {
+    rt_error ("Internal Error.");
+    return NULL;
+  }
 
   if (!check_stack (1)) return;
   idx = bc_num2long (ex_stack->s_num);
@@ -1018,7 +1049,11 @@ process_params (program_counter *progctr, int func)
 	
 		/* Compute source index and make sure some structure exists. */
 		ix = (int) bc_num2long (ex_stack->s_num);
-		(void) get_array_num (ix, 0);    
+		if (get_array_num (ix, 0) == NULL)
+		{
+		  rt_error ("Internal Error.");
+		  return;
+		}
 	
 		/* Push a new array and Compute Destination index */
 		auto_var (params->av_name);  
@@ -1049,7 +1084,6 @@ process_params (program_counter *progctr, int func)
 		else
 		  rt_error ("Parameter type mismatch, parameter %s.",
 			    v_names[params->av_name]);
-		params++;
 	      }
 	  pop ();
 	}

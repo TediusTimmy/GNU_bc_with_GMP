@@ -610,7 +610,7 @@ lookup (char *name, int  namekind)
 	{
 	  if (id->v_name >= v_count)
 	    more_variables ();
-          v_names[id->v_name - 1] = name;
+          v_names[id->v_name] = name;
 	  return (id->v_name);
 	}
       yyerror ("Too many variables");
