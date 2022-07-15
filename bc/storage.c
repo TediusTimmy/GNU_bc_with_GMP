@@ -370,6 +370,12 @@ get_array_num (int var_index, unsigned long idx)
   unsigned int ix, ix1;
   int sub [NODE_DEPTH];
 
+  if (var_index >= a_count)
+  {
+    rt_error ("DANGER, WILL ROBINSON!");
+    return NULL;
+  }
+
   /* Get the array entry. */
   ary_ptr = arrays[var_index];
   if (ary_ptr == NULL)
@@ -1018,7 +1024,11 @@ process_params (program_counter *progctr, int func)
 	
 		/* Compute source index and make sure some structure exists. */
 		ix = (int) bc_num2long (ex_stack->s_num);
-		(void) get_array_num (ix, 0);    
+		if (get_array_num (ix, 0) == NULL)
+		{
+		  rt_error ("DANGER! DANGER! DANGER!");
+		  return;
+		}
 	
 		/* Push a new array and Compute Destination index */
 		auto_var (params->av_name);  
@@ -1049,7 +1059,6 @@ process_params (program_counter *progctr, int func)
 		else
 		  rt_error ("Parameter type mismatch, parameter %s.",
 			    v_names[params->av_name]);
-		params++;
 	      }
 	  pop ();
 	}

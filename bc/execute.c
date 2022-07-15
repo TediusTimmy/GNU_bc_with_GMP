@@ -130,7 +130,7 @@ execute (void)
 	  gp = functions[pc.pc_func].f_label;
 	  l_gp  = label_num >> BC_LABEL_LOG;
 	  l_off = label_num % BC_LABEL_GROUP;
-	  while (l_gp-- > 0) gp = gp->l_next;
+	  while ((l_gp-- > 0) && (gp != NULL)) gp = gp->l_next;
           if (gp)
             pc.pc_addr = gp->l_adrs[l_off];
           else {
@@ -149,7 +149,10 @@ execute (void)
 	/* Check to make sure it is defined. */
 	if (!functions[new_func].f_defined)
 	  {
-	    rt_error ("Function %s not defined.", f_names[new_func]);
+	    if (new_func < f_count)
+	      rt_error ("Function %s not defined.", f_names[new_func]);
+	    else
+	      rt_error ("Internal error: function not defined.");
 	    break;
 	  }
 
