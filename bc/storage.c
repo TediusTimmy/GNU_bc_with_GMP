@@ -373,7 +373,7 @@ get_array_num (int var_index, unsigned long idx)
 
   if (var_index >= a_count)
   {
-    rt_error ("DANGER, WILL ROBINSON!");
+    rt_error ("Array %d invalid.", var_index);
     return NULL;
   }
 
@@ -595,6 +595,12 @@ store_array (int var_name)
   bc_num *num_ptr;
   long idx;
 
+  if (var_name > a_count)
+    {
+      rt_error ("Array %d invalid.", var_name);
+      return;
+    }
+
   if (!check_stack(2)) return;
   idx = bc_num2long (ex_stack->s_next->s_num);
   if (idx < 0 || idx > BC_DIM_MAX ||
@@ -672,6 +678,12 @@ load_array (int var_name)
 {
   bc_num *num_ptr;
   long   idx;
+
+  if (var_name > a_count)
+    {
+      rt_error ("Array %d invalid.", var_name);
+      return;
+    }
 
   if (!check_stack(1)) return;
   idx = bc_num2long (ex_stack->s_num);
@@ -752,6 +764,12 @@ decr_array (int var_name)
 {
   bc_num *num_ptr;
   long   idx;
+
+  if (var_name > a_count)
+    {
+      rt_error ("Array %d invalid.", var_name);
+      return;
+    }
 
   /* It is an array variable. */
   if (!check_stack (1)) return;
@@ -834,6 +852,12 @@ incr_array (int var_name)
 {
   bc_num *num_ptr;
   long   idx;
+
+  if (var_name > a_count)
+    {
+      rt_error ("Array %d invalid.", var_name);
+      return;
+    }
 
   if (!check_stack (1)) return;
   idx = bc_num2long (ex_stack->s_num);
@@ -1027,7 +1051,7 @@ process_params (program_counter *progctr, int func)
 		ix = (int) bc_num2long (ex_stack->s_num);
 		if (get_array_num (ix, 0) == NULL)
 		{
-		  rt_error ("DANGER! DANGER! DANGER!");
+		  rt_error ("Array %d invalid.", ix);
 		  return;
 		}
 	
