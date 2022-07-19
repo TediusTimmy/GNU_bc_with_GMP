@@ -146,13 +146,16 @@ execute (void)
 	if ((new_func & 0x80) != 0) 
 	  new_func = ((new_func & 0x7f) << 8) + byte(&pc);
 
+	if (new_func >= f_count)
+	  {
+	    rt_error ("Internal error: function not defined.");
+	    break;
+	  }
+
 	/* Check to make sure it is defined. */
 	if (!functions[new_func].f_defined)
 	  {
-	    if (new_func < f_count)
-	      rt_error ("Function %s not defined.", f_names[new_func]);
-	    else
-	      rt_error ("Internal error: function not defined.");
+	    rt_error ("Function %s not defined.", f_names[new_func]);
 	    break;
 	  }
 
@@ -207,25 +210,32 @@ execute (void)
 
       case 'O' : /* Write a string to the output with processing. */
 	while ((ch = byte(&pc)) != '"')
-	  if (ch != '\\')
-	    out_schar (ch);
-	  else
-	    {
-	      ch = byte(&pc);
-	      if (ch == '"') break;
-	      switch (ch)
-		{
-		case 'a':  out_schar (007); break;
-		case 'b':  out_schar ('\b'); break;
-		case 'f':  out_schar ('\f'); break;
-		case 'n':  out_schar ('\n'); break;
-		case 'q':  out_schar ('"'); break;
-		case 'r':  out_schar ('\r'); break;
-		case 't':  out_schar ('\t'); break;
-		case '\\': out_schar ('\\'); break;
-		default:  break;
-		}
-	    }
+	  {
+	    if (pc.pc_addr == functions[pc.pc_func].f_code_size)
+	      {
+		rt_error ("Broken String.");
+		break;
+	      }
+	    if (ch != '\\')
+	      out_schar (ch);
+	    else
+	      {
+		ch = byte(&pc);
+		if (ch == '"') break;
+		switch (ch)
+		  {
+		  case 'a':  out_schar (007); break;
+		  case 'b':  out_schar ('\b'); break;
+		  case 'f':  out_schar ('\f'); break;
+		  case 'n':  out_schar ('\n'); break;
+		  case 'q':  out_schar ('"'); break;
+		  case 'r':  out_schar ('\r'); break;
+		  case 't':  out_schar ('\t'); break;
+		  case '\\': out_schar ('\\'); break;
+		  default:  break;
+		  }
+	      }
+	  }
 	fflush (stdout);
 	break;
 

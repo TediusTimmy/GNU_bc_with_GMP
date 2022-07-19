@@ -595,7 +595,7 @@ store_array (int var_name)
   bc_num *num_ptr;
   long idx;
 
-  if (var_name > a_count)
+  if (var_name >= a_count)
     {
       rt_error ("Array %d invalid.", var_name);
       return;
@@ -679,7 +679,7 @@ load_array (int var_name)
   bc_num *num_ptr;
   long   idx;
 
-  if (var_name > a_count)
+  if (var_name >= a_count)
     {
       rt_error ("Array %d invalid.", var_name);
       return;
@@ -765,7 +765,7 @@ decr_array (int var_name)
   bc_num *num_ptr;
   long   idx;
 
-  if (var_name > a_count)
+  if (var_name >= a_count)
     {
       rt_error ("Array %d invalid.", var_name);
       return;
@@ -853,7 +853,7 @@ incr_array (int var_name)
   bc_num *num_ptr;
   long   idx;
 
-  if (var_name > a_count)
+  if (var_name >= a_count)
     {
       rt_error ("Array %d invalid.", var_name);
       return;
