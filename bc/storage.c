@@ -349,6 +349,7 @@ get_var (int var_name)
     {
       var_ptr = variables[var_name] = bc_malloc (sizeof (bc_var));
       bc_init_num (&var_ptr->v_value);
+      var_ptr->v_next = NULL;
     }
   return var_ptr;
 }
