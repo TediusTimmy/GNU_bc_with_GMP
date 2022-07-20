@@ -596,10 +596,10 @@ store_array (int var_name)
   long idx;
 
   if (var_name >= a_count)
-  {
-    rt_error ("Internal Error.");
-    return NULL;
-  }
+    {
+      rt_error ("Internal Error.");
+      return;
+    }
 
   if (!check_stack(2)) return;
   idx = bc_num2long (ex_stack->s_next->s_num);
@@ -680,10 +680,10 @@ load_array (int var_name)
   long   idx;
 
   if (var_name >= a_count)
-  {
-    rt_error ("Internal Error.");
-    return NULL;
-  }
+    {
+      rt_error ("Internal Error.");
+      return;
+    }
 
   if (!check_stack(1)) return;
   idx = bc_num2long (ex_stack->s_num);
@@ -766,10 +766,10 @@ decr_array (int var_name)
   long   idx;
 
   if (var_name >= a_count)
-  {
-    rt_error ("Internal Error.");
-    return NULL;
-  }
+    {
+      rt_error ("Internal Error.");
+      return;
+    }
 
   /* It is an array variable. */
   if (!check_stack (1)) return;
@@ -854,10 +854,10 @@ incr_array (int var_name)
   long   idx;
 
   if (var_name >= a_count)
-  {
-    rt_error ("Internal Error.");
-    return NULL;
-  }
+    {
+      rt_error ("Internal Error.");
+      return;
+    }
 
   if (!check_stack (1)) return;
   idx = bc_num2long (ex_stack->s_num);
