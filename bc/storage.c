@@ -372,10 +372,10 @@ get_array_num (int var_index, unsigned long idx)
   int sub [NODE_DEPTH];
 
   if (var_index >= a_count)
-  {
-    rt_error ("Internal Error.");
-    return NULL;
-  }
+    {
+      rt_error ("Internal Error.");
+      return NULL;
+    }
 
   /* Get the array entry. */
   ary_ptr = arrays[var_index];
@@ -1050,10 +1050,10 @@ process_params (program_counter *progctr, int func)
 		/* Compute source index and make sure some structure exists. */
 		ix = (int) bc_num2long (ex_stack->s_num);
 		if (get_array_num (ix, 0) == NULL)
-		{
-		  rt_error ("Internal Error.");
-		  return;
-		}
+		  {
+		    rt_error ("Internal Error.");
+		    return;
+		  }
 	
 		/* Push a new array and Compute Destination index */
 		auto_var (params->av_name);  
